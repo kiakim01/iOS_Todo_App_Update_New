@@ -9,7 +9,8 @@ import UIKit
 
 class ViewController: UIViewController, UITableViewDelegate {
     
-    let toDoList = TodoList.data
+    
+    var numberOfItem = 3
     
     var shouldHideTodoView: Bool?{
         didSet{
@@ -30,8 +31,9 @@ class ViewController: UIViewController, UITableViewDelegate {
     
     let toDoView: UIView = {
         let view = UIView()
-        view.layer.borderColor = UIColor.red.cgColor
-        view.layer.borderWidth = 1
+        view.layer.borderColor = UIColor.gray.cgColor
+        view.layer.borderWidth = 0.5
+        view.layer.cornerRadius = 10
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -45,6 +47,7 @@ class ViewController: UIViewController, UITableViewDelegate {
         button.layer.borderWidth = 1
         button.layer.cornerRadius = 10
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(addCell), for: .touchUpInside)
         return button
     }()
     
@@ -61,6 +64,7 @@ class ViewController: UIViewController, UITableViewDelegate {
         let view = UIView()
         view.layer.borderColor = UIColor.blue.cgColor
         view.layer.borderWidth = 1
+        view.layer.cornerRadius = 10
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -149,22 +153,34 @@ extension ViewController{
 extension ViewController: UITextViewDelegate, UITableViewDataSource{
     
 
-    
+    //View가 생성해야할 행의 개수
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        1
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return toDoList.count
+        return numberOfItem
     }
     
     
+    //View에 표현해야 할 내용을 구성
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CustomCell") as! CustomCell
+        //재사용이 가능한 셀을 가져오는 tableView 메서드
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CustomCell", for: indexPath) as! CustomCell
+      
         
-        // configure cell
+    let todoItem = TodoList.data[indexPath.row] // 해당 인덱스에 해당하는 TodoList 데이터 가져오기
+         cell.configure(with: todoItem) // 셀 구성하기
          return cell
         
+    }
+    
+    @objc func addCell() {
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "M.dd"
+        let dateString = dateFormatter.string(from: currentDate)
+        
+        let newTodo = TodoList(date: dateString, contents: "", isDone: false)
+        TodoList.data.append(newTodo)
+        numberOfItem += 1
+        todoTableview.reloadData()
     }
     
     
