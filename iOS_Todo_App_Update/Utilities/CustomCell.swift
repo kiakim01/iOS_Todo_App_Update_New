@@ -41,6 +41,7 @@ class CustomCell: UITableViewCell{
         return textField
     }()
     
+    
     let checkIcon : UIImageView = {
         let view = UIImageView()
         view.image = UIImage(systemName: "checkmark.circle")
@@ -55,7 +56,7 @@ class CustomCell: UITableViewCell{
         contentView.addSubview(dataArea)
         contentView.addSubview(toDoTextfield)
         contentView.addSubview(checkIcon)
-        setupDate()
+         setupDate()
         setLayout()
         
     }
@@ -82,6 +83,8 @@ class CustomCell: UITableViewCell{
             checkIcon.centerYAnchor.constraint(equalTo:
                                                 contentView.centerYAnchor),
         ])
+        
+       
         
     }
     
@@ -111,10 +114,11 @@ extension CustomCell { // 예시로 extension으로 정의했습니다.
     }
     
     private func dateFormat(date:Date) -> String {
-        //
+       
         let formtter = DateFormatter()
         formtter.dateFormat = "M.dd"
-        
+  
         return formtter.string(from: date)
+        
     }
 }
