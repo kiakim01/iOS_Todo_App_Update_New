@@ -7,7 +7,9 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITableViewDelegate {
+    
+    let toDoList = TodoList.data
     
     var shouldHideTodoView: Bool?{
         didSet{
@@ -28,14 +30,37 @@ class ViewController: UIViewController {
     
     let toDoView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.red
+        view.layer.borderColor = UIColor.red.cgColor
+        view.layer.borderWidth = 1
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
+    
+    let addButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("추가하기", for: .normal)
+        button.setTitleColor(UIColor(hex: "187afe"), for:.normal)
+        button.layer.borderColor = UIColor(hex: "187afe").cgColor
+        button.layer.borderWidth = 1
+        button.layer.cornerRadius = 10
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    
+    let todoTableview: UITableView = {
+        let tableView = UITableView()
+        tableView.register(CustomCell.self,forCellReuseIdentifier: "CustomCell")
+        tableView.backgroundColor = UIColor.blue
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
+    }()
+    
     let doneView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.yellow
+        view.layer.borderColor = UIColor.blue.cgColor
+        view.layer.borderWidth = 1
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -59,7 +84,10 @@ extension ViewController{
         self.segmentedControl.addTarget(self, action: #selector(didChangeValue(segment:)), for: .valueChanged)
         self.segmentedControl.selectedSegmentIndex = 0
         self.didChangeValue(segment: self.segmentedControl)
-        
+        toDoView.addSubview(addButton)
+        toDoView.addSubview(todoTableview)
+        todoTableview.delegate = self
+        todoTableview.dataSource = self
         
         setLayout()
     }
@@ -79,6 +107,21 @@ extension ViewController{
             self.toDoView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -80),
             self.toDoView.topAnchor.constraint(equalTo: self.segmentedControl.bottomAnchor, constant: 16),
         ])
+        
+        NSLayoutConstraint.activate([
+            addButton.topAnchor.constraint(equalTo: toDoView.topAnchor, constant: 30),
+            addButton.leftAnchor.constraint(equalTo: toDoView.leftAnchor, constant: 20),
+            addButton.rightAnchor.constraint(equalTo: toDoView.rightAnchor, constant: -20),
+            addButton.heightAnchor.constraint(equalToConstant: 50)
+            
+        ])
+        
+        NSLayoutConstraint.activate([
+            todoTableview.topAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 50),
+            todoTableview.leftAnchor.constraint(equalTo: toDoView.leftAnchor, constant: 20),
+            todoTableview.rightAnchor.constraint(equalTo: toDoView.rightAnchor, constant: -20),
+            todoTableview.bottomAnchor.constraint(equalTo: toDoView.bottomAnchor, constant: 50)
+        ])
      
         NSLayoutConstraint.activate([
             self.doneView.leftAnchor.constraint(equalTo: self.toDoView.leftAnchor),
@@ -88,15 +131,41 @@ extension ViewController{
         ])
         
         
+        
     }
     
         
     
 }
 
-
+//MARK: Method
 extension ViewController{
     @objc private func didChangeValue(segment: UISegmentedControl){
         self.shouldHideTodoView = segment.selectedSegmentIndex != 0
     }
+}
+
+//MARK: TableView
+extension ViewController: UITextViewDelegate, UITableViewDataSource{
+    
+
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        1
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return toDoList.count
+    }
+    
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CustomCell") as! CustomCell
+        
+        // configure cell
+         return cell
+        
+    }
+    
+    
 }
