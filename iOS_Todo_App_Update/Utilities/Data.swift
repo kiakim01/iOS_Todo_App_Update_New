@@ -18,9 +18,10 @@ struct TodoList {
 
 
 extension TodoList {
-    static var data = [
-        TodoList(date:"8.25",contents: "UI 마무리",isDone: false),
-        TodoList(date:"8.25",contents: "점심먹기",isDone: true),
-        TodoList(date:"8.25",contents: "저녁먹기",isDone: true)
+    static var data:[TodoList] = [
+        //data를 1개로 조정하면 에러가 발생하는 이유 ?
+        TodoList(date:"8.26",contents: "userDefaults에 데이터 저장",isDone: false),
+        TodoList(date:"8.26",contents: "isDoneButton 동작구현 ",isDone:  false),
+        TodoList(date:"8.26",contents: "if isDone = true stroke  ",isDone:  false)
     ]
 }

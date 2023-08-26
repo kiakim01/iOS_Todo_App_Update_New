@@ -116,7 +116,7 @@ extension CustomCell { // 예시로 extension으로 정의했습니다.
     private func dateFormat(date:Date) -> String {
        
         let formtter = DateFormatter()
-        formtter.dateFormat = "M.dd"
+        formtter.dateFormat = "M!dd"
   
         return formtter.string(from: date)
         

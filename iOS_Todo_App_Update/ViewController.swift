@@ -10,7 +10,7 @@ import UIKit
 class ViewController: UIViewController, UITableViewDelegate {
     
     
-    var numberOfItem = 3
+    var numberOfItem = TodoList.data.count
     
     var shouldHideTodoView: Bool?{
         didSet{
@@ -68,15 +68,15 @@ class ViewController: UIViewController, UITableViewDelegate {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         configureUI()
         
     }
-
-
+    
+    
 }
 
 extension ViewController{
@@ -126,7 +126,7 @@ extension ViewController{
             todoTableview.rightAnchor.constraint(equalTo: toDoView.rightAnchor, constant: -20),
             todoTableview.bottomAnchor.constraint(equalTo: toDoView.bottomAnchor, constant: 50)
         ])
-     
+        
         NSLayoutConstraint.activate([
             self.doneView.leftAnchor.constraint(equalTo: self.toDoView.leftAnchor),
             self.doneView.rightAnchor.constraint(equalTo: self.toDoView.rightAnchor),
@@ -138,7 +138,7 @@ extension ViewController{
         
     }
     
-        
+    
     
 }
 
@@ -152,7 +152,7 @@ extension ViewController{
 //MARK: TableView
 extension ViewController: UITextViewDelegate, UITableViewDataSource{
     
-
+    
     //View가 생성해야할 행의 개수
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return numberOfItem
@@ -163,10 +163,31 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //재사용이 가능한 셀을 가져오는 tableView 메서드
         let cell = tableView.dequeueReusableCell(withIdentifier: "CustomCell", for: indexPath) as! CustomCell
-    let todoItem = TodoList.data[indexPath.row] // 해당 인덱스에 해당하는 TodoList 데이터 가져오기
-         cell.configure(with: todoItem) // 셀 구성하기
-         return cell
+        
+        if TodoList.data.count > 0 {
+            let todoItem = TodoList.data[indexPath.row]
+            cell.configure(with: todoItem)
+            print("데이터 있다")
+        } else {
+            print("데이터 없다")
+            let emptyLabel: UILabel = {
+                let label = UILabel()
+                label.text = "추가 된 항목이 없습니다. "
+                label.backgroundColor = UIColor.blue
+                label.translatesAutoresizingMaskIntoConstraints = false
+                return label
+            }()
+            
+            cell.contentView.addSubview(emptyLabel)
+            
+            NSLayoutConstraint.activate([
+                emptyLabel.centerXAnchor.constraint(equalTo: cell.contentView.centerXAnchor),
+                emptyLabel.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
+            ])
         }
+        
+        return cell
+    }
     
     
     
@@ -175,53 +196,65 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
         let alert = UIAlertController(title: "작성하기", message: "할일을 입력하세요", preferredStyle: .alert)
         alert.addTextField {(textField:UITextField) in textField.placeholder = "input todo"}
         
-        let addAction = UIAlertAction(title: "추가하기", style: .default) { [weak self] _ in
+        let addAction = UIAlertAction(title: "완료", style: .default) { [weak self] _ in
             if let textField = alert.textFields?.first,
-                   let taskText = textField.text,
-                   // 텍스필드가 비어있지않다면 아래 로직이 실행됩니다.
-                   !taskText.isEmpty {
-                   
-                   // 현재 날짜를 가져옵니다.
-                   let currentDate = Date()
-                   
-                   // 날짜를 원하는 형식("MM.dd")으로 변환하기 위한 날짜 포매터를 생성합니다.
-                   let dateFormatter = DateFormatter()
-                   dateFormatter.dateFormat = "MM.dd"
-                   let dateString = dateFormatter.string(from: currentDate)
-                   
-                   // 현재 날짜, 입력된 작업 내용, isDone을 false로 설정하여 새로운 TodoList 항목을 생성합니다.
-                   let newTodo = TodoList(date: dateString, contents: taskText, isDone: false)
-                   
-                   // 생성한 newTodo를 TodoList.data 배열에 추가합니다.
-                   TodoList.data.append(newTodo)
-                   
-                   // numberOfItem(작업 개수)를 업데이트하고 변경 사항을 반영하기 위해 테이블 뷰를 다시 로드합니다.
-                   self?.numberOfItem += 1
-                   self?.todoTableview.reloadData()
-               }
+               let taskText = textField.text,
+               // 텍스필드가 비어있지않다면 아래 로직이 실행됩니다.
+               !taskText.isEmpty {
+                
+                // AlertTextField에 입력된 내용을 TodoList의 항목으로 ,생성한 newTodo를 TodoList.data 배열에 추가합니다.
+                let newTodo = TodoList(contents: taskText, isDone: false)
+                TodoList.data.append(newTodo)
+                
+                
+                //userDefalut에 저장하는 로직 구현, 저장하고 확인하기
+                let currentDate = Date()
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "MM*dd"
+                let useDate = dateFormatter.string(from: currentDate)
+                
+                
+                UserDefaults.standard.set(useDate, forKey: "Date")
+                UserDefaults.standard.set(taskText, forKey: "Contents")
+                UserDefaults.standard.set(false, forKey: "IsDone")
+                // Print the values saved in UserDefaults
+                if let savedContents = UserDefaults.standard.string(forKey: "Contents"),
+                   let savedDate = UserDefaults.standard.string(forKey: "Date") {
+                    let savedIsDone = UserDefaults.standard.bool(forKey: "IsDone")
+                    print("* User Default Contents: \(savedContents)")
+                    print("* User Default IsDone: \(savedIsDone)")
+                    print("* User Default Date: \(savedDate)")
+                }
+                
+                
+                // numberOfItem(작업 개수)를 업데이트하고 변경 사항을 반영하기 위해 테이블 뷰를 다시 로드합니다.
+                self?.numberOfItem += 1
+                self?.todoTableview.reloadData()
+                
+            }
         }
-                let cancleAction = UIAlertAction(title: "취소하기", style: .cancel){ (cancel) in
+        let cancleAction = UIAlertAction(title: "취소하기", style: .cancel){ (cancel) in
         }
-       
+        
         
         alert.addAction(addAction)
         alert.addAction(cancleAction)
-
+        
         self.present(alert, animated: true, completion: nil)
         
         
         
         
-//        TextField에 직접 입력할때
-//        let currentDate = Date()
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "M.dd"
-//        let dateString = dateFormatter.string(from: currentDate)
-//
-//        let newTodo = TodoList(date: dateString, contents: "", isDone: false)
-//        TodoList.data.append(newTodo)
-//        numberOfItem += 1
-//        todoTableview.reloadData()
+        //        TextField에 직접 입력할때
+        //        let currentDate = Date()
+        //        let dateFormatter = DateFormatter()
+        //        dateFormatter.dateFormat = "M.dd"
+        //        let dateString = dateFormatter.string(from: currentDate)
+        //
+        //        let newTodo = TodoList(date: dateString, contents: "", isDone: false)
+        //        TodoList.data.append(newTodo)
+        //        numberOfItem += 1
+        //        todoTableview.reloadData()
     }
     
     
