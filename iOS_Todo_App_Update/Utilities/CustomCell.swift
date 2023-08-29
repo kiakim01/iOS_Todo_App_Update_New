@@ -100,7 +100,6 @@ extension CustomCell { // 예시로 extension으로 정의했습니다.
             checkIcon.image = isDone ? UIImage(systemName: "checkmark.circle.fill") : UIImage(systemName: "checkmark.circle")
         } else {
             // Handle the case where isDone is nil (provide default styles)
-            contentView.backgroundColor = UIColor.gray // or any other color you prefer
             toDoTextfield.textColor = UIColor.black // or any other color you prefer
         }
 
@@ -116,8 +115,13 @@ extension CustomCell { // 예시로 extension으로 정의했습니다.
     private func dateFormat(date:Date) -> String {
        
         let formtter = DateFormatter()
-        formtter.dateFormat = "M!dd"
+        formtter.dateFormat = "M.dd"
   
+        let savedDate = UserDefaults.standard.string(forKey: "Date")
+       //Bug 2 : PickerView에서 date를 수정해도 오늘 날짜로 print 되는 문제
+        //  @objc func dateChange + addAction. 로직을 합치면 될것같은데.. ?
+//        print("* 날짜 업데이트 완료: \(savedDate)")
+        
         return formtter.string(from: date)
         
     }

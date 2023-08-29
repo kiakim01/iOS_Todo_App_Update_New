@@ -11,6 +11,7 @@ class ViewController: UIViewController, UITableViewDelegate {
     
     
     var numberOfItem = TodoList.data.count
+//    var numberOfItem = TodoList.data.count
     
     var shouldHideTodoView: Bool?{
         didSet{
@@ -92,7 +93,7 @@ extension ViewController{
         toDoView.addSubview(todoTableview)
         todoTableview.delegate = self
         todoTableview.dataSource = self
-        
+        //emptyLabel 관련코드가 이
         setLayout()
     }
     
@@ -167,8 +168,9 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
         if TodoList.data.count > 0 {
             let todoItem = TodoList.data[indexPath.row]
             cell.configure(with: todoItem)
-            print("데이터 있다")
         } else {
+            //Bug 1: (더미)데이터가 없을 경우 아래 로직이 실행 되지 않는 문제
+            //cell.configure 쪽으로 로직 옮겨보기 .. !
             print("데이터 없다")
             let emptyLabel: UILabel = {
                 let label = UILabel()
@@ -182,7 +184,13 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
             
             NSLayoutConstraint.activate([
                 emptyLabel.centerXAnchor.constraint(equalTo: cell.contentView.centerXAnchor),
-                emptyLabel.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
+                emptyLabel.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
+                emptyLabel.heightAnchor.constraint(equalToConstant: 100),
+                emptyLabel.widthAnchor.constraint(equalToConstant: 100)
+    
+                
+                
+                
             ])
         }
         
@@ -201,30 +209,37 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
                let taskText = textField.text,
                // 텍스필드가 비어있지않다면 아래 로직이 실행됩니다.
                !taskText.isEmpty {
-                
-                // AlertTextField에 입력된 내용을 TodoList의 항목으로 ,생성한 newTodo를 TodoList.data 배열에 추가합니다.
-                let newTodo = TodoList(contents: taskText, isDone: false)
-                TodoList.data.append(newTodo)
-                
-                
+        
                 //userDefalut에 저장하는 로직 구현, 저장하고 확인하기
+                //현재 날짜를 받아오는 부분
                 let currentDate = Date()
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "MM*dd"
-                let useDate = dateFormatter.string(from: currentDate)
+                let Date = dateFormatter.string(from: currentDate)
                 
                 
-                UserDefaults.standard.set(useDate, forKey: "Date")
-                UserDefaults.standard.set(taskText, forKey: "Contents")
-                UserDefaults.standard.set(false, forKey: "IsDone")
-                // Print the values saved in UserDefaults
-                if let savedContents = UserDefaults.standard.string(forKey: "Contents"),
-                   let savedDate = UserDefaults.standard.string(forKey: "Date") {
-                    let savedIsDone = UserDefaults.standard.bool(forKey: "IsDone")
-                    print("* User Default Contents: \(savedContents)")
-                    print("* User Default IsDone: \(savedIsDone)")
-                    print("* User Default Date: \(savedDate)")
-                }
+                UserDefaults.standard.set(Date, forKey: "Key_Date")
+                UserDefaults.standard.set(taskText, forKey: "Key_Contents")
+                UserDefaults.standard.set(false, forKey: "Key_IsDone")
+                
+                
+                
+                // AlertTextField에 입력된 내용을 TodoList의 항목으로
+                //생성한 newTodo를 TodoList.data 배열에 추가합니다.
+                //지금까지는 여기 코드가 동작했던거군
+//                let newTodo = TodoList(contents: taskText, isDone: false)
+//                TodoList.data.append(newTodo)
+//                for (index,todo) in TodoList.data.enumerated() {
+//                    print("\(index). \(todo.contents),  \(todo.isDone)")
+//                }
+       
+                //영호튜터님 멘토링 - 여기부터시작
+                //1. 화면에 그려주는 부분이 어딘지 먼저 찾고
+                //2. 유져디폴트로 그려주기
+                let newTodoData = TodoData(date: currentDate, contents: taskText, isDone: false)
+                TodoManager.shared.addTodoItem(date: newTodoData.date, contents: newTodoData.contents)
+                
+                
                 
                 
                 // numberOfItem(작업 개수)를 업데이트하고 변경 사항을 반영하기 위해 테이블 뷰를 다시 로드합니다.
