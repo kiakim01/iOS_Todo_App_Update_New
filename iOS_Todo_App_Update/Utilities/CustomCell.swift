@@ -93,7 +93,7 @@ class CustomCell: UITableViewCell{
 //MARK: Method
 
 extension CustomCell { // 예시로 extension으로 정의했습니다.
-    func configure(with todoItem: TodoList) { // configure 메서드 추가
+    func configure(with todoItem: TodoData) { // configure 메서드 추가
         toDoTextfield.text = todoItem.contents // TodoList의 contents 값을 설정해줍니다.
        
         if let isDone = todoItem.isDone {

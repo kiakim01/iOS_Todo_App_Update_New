@@ -10,8 +10,8 @@ import UIKit
 class ViewController: UIViewController, UITableViewDelegate {
     
     
-    var numberOfItem = TodoList.data.count
-//    var numberOfItem = TodoList.data.count
+    var numberOfItem = TodoManager.shared.todoItems.count
+
     
     var shouldHideTodoView: Bool?{
         didSet{
@@ -165,8 +165,8 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
         //재사용이 가능한 셀을 가져오는 tableView 메서드
         let cell = tableView.dequeueReusableCell(withIdentifier: "CustomCell", for: indexPath) as! CustomCell
         
-        if TodoList.data.count > 0 {
-            let todoItem = TodoList.data[indexPath.row]
+        if TodoManager.shared.todoItems.count > 0 {
+            let todoItem = TodoManager.shared.todoItems[indexPath.row]
             cell.configure(with: todoItem)
         } else {
             //Bug 1: (더미)데이터가 없을 경우 아래 로직이 실행 되지 않는 문제
