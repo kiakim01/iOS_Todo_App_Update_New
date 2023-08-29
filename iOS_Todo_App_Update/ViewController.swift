@@ -164,8 +164,7 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //재사용이 가능한 셀을 가져오는 tableView 메서드
         let cell = tableView.dequeueReusableCell(withIdentifier: "CustomCell", for: indexPath) as! CustomCell
-        
-        if TodoManager.shared.todoItems.count > 0 {
+         if TodoManager.shared.todoItems.count > 0 {
             let todoItem = TodoManager.shared.todoItems[indexPath.row]
             cell.configure(with: todoItem)
         } else {
@@ -187,16 +186,33 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
                 emptyLabel.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
                 emptyLabel.heightAnchor.constraint(equalToConstant: 100),
                 emptyLabel.widthAnchor.constraint(equalToConstant: 100)
-    
-                
-                
-                
+ 
             ])
         }
         
         return cell
     }
     
+    
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "삭제") { [weak self] (_, _, completionHandler) in
+            self?.deleteItem(at: indexPath)
+            completionHandler(true)
+        }
+        
+        // 스와이프 동작 구성을 반환합니다.
+        return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
+      
+    func deleteItem(at indexPath: IndexPath) {
+        TodoManager.shared.todoItems.remove(at: indexPath.row)
+//        TodoManager.shared.saveTodoItemsToUserDefaults()
+
+        // UI를 업데이트합니다.
+        numberOfItem -= 1
+        todoTableview.deleteRows(at: [indexPath], with: .fade)
+    }
+
     
     
     
