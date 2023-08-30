@@ -7,6 +7,38 @@
 
 import UIKit
 
+class TableHeader: UITableViewHeaderFooterView{
+    static let identifier = "TableHeader"
+    
+  
+    
+  let headerLabel: UILabel = {
+        let label = UILabel()
+        label.text = "DO IT Something"
+        label.font = .systemFont(ofSize: 22, weight: .semibold)
+        label.textAlignment = .center
+        label.backgroundColor = UIColor.green
+        return label
+    }()
+    
+    override init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: reuseIdentifier)
+        contentView.addSubview(headerLabel)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+        
+    override func layoutSubviews() {
+        super.layoutSubviews()
+//        label.sizeToFit()
+        headerLabel.frame = CGRect(x: 0, y: -30, width: 300, height: 80)
+
+    }
+    
+}
+
 class ViewController: UIViewController, UITableViewDelegate {
     
     
@@ -56,6 +88,7 @@ class ViewController: UIViewController, UITableViewDelegate {
     let todoTableview: UITableView = {
         let tableView = UITableView()
         tableView.register(CustomCell.self,forCellReuseIdentifier: "CustomCell")
+        tableView.register(TableHeader.self, forHeaderFooterViewReuseIdentifier: "header")
         tableView.backgroundColor = UIColor.blue
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
@@ -122,7 +155,7 @@ extension ViewController{
         ])
         
         NSLayoutConstraint.activate([
-            todoTableview.topAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 50),
+            todoTableview.topAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 25),
             todoTableview.leftAnchor.constraint(equalTo: toDoView.leftAnchor, constant: 20),
             todoTableview.rightAnchor.constraint(equalTo: toDoView.rightAnchor, constant: -20),
             todoTableview.bottomAnchor.constraint(equalTo: toDoView.bottomAnchor, constant: 50)
@@ -194,7 +227,7 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
     }
     
 //    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) -> UITableViewCell {
-//    
+//
 //    }
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -216,6 +249,10 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
         todoTableview.deleteRows(at: [indexPath], with: .fade)
     }
 
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "header")
+        return header
+    }
     
     
     
