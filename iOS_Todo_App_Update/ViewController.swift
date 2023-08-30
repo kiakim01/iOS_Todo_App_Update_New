@@ -193,6 +193,9 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
         return cell
     }
     
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) -> UITableViewCell {
+//    
+//    }
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "삭제") { [weak self] (_, _, completionHandler) in
@@ -232,11 +235,12 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "MM*dd"
                 let Date = dateFormatter.string(from: currentDate)
+            
                 
                 
                 UserDefaults.standard.set(Date, forKey: "Key_Date")
                 UserDefaults.standard.set(taskText, forKey: "Key_Contents")
-                UserDefaults.standard.set(false, forKey: "Key_IsDone")
+//                UserDefaults.standard.set(isDone, forKey: "Key_IsDone")
                 
                 
                 
@@ -248,10 +252,7 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
 //                for (index,todo) in TodoList.data.enumerated() {
 //                    print("\(index). \(todo.contents),  \(todo.isDone)")
 //                }
-       
-                //영호튜터님 멘토링 - 여기부터시작
-                //1. 화면에 그려주는 부분이 어딘지 먼저 찾고
-                //2. 유져디폴트로 그려주기
+
                 let newTodoData = TodoData(date: currentDate, contents: taskText, isDone: false)
                 TodoManager.shared.addTodoItem(date: newTodoData.date, contents: newTodoData.contents)
                 

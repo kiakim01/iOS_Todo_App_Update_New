@@ -10,6 +10,7 @@ import UIKit
 
 class CustomCell: UITableViewCell{
     
+    var bringData : TodoData?
     
     let dataArea: UITextField = {
         let view = UITextField()
@@ -22,13 +23,13 @@ class CustomCell: UITableViewCell{
     }()
     //private 사용이유: 접근제어자 메서드가 호출 될때만 사용되도록
     private func setupDate(){
-       let datePicker = UIDatePicker()
+        let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .wheels
         datePicker.locale = Locale(identifier: "ko-KR")
         //값이 변할때마다 동작을 설정
         datePicker.addTarget(self, action: #selector(dateChange), for: .valueChanged)
-       //
+        //
         dataArea.inputView = datePicker
         //TextField에 오늘 날짜로 표시되게 설정
         dataArea.text = dateFormat(date: Date())
@@ -38,9 +39,17 @@ class CustomCell: UITableViewCell{
         let textField = UITextField()
         textField.placeholder = "할일을 입력하세요"
         textField.translatesAutoresizingMaskIntoConstraints = false
+        
         return textField
     }()
     
+    let isDoneButton : UIButton = {
+        let button = UIButton()
+        //        button.backgroundColor = UIColor.red
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(isDoneChange), for: .touchUpInside)
+        return button
+    }()
     
     let checkIcon : UIImageView = {
         let view = UIImageView()
@@ -55,8 +64,10 @@ class CustomCell: UITableViewCell{
         
         contentView.addSubview(dataArea)
         contentView.addSubview(toDoTextfield)
-        contentView.addSubview(checkIcon)
-         setupDate()
+        contentView.addSubview(isDoneButton)
+        isDoneButton.addSubview(checkIcon)
+        
+        setupDate()
         setLayout()
         
     }
@@ -79,12 +90,19 @@ class CustomCell: UITableViewCell{
         ])
         
         NSLayoutConstraint.activate([
-            checkIcon.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -10),
-            checkIcon.centerYAnchor.constraint(equalTo:
-                                                contentView.centerYAnchor),
+            isDoneButton.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -10),
+            isDoneButton.centerYAnchor.constraint(equalTo:
+                                                    contentView.centerYAnchor),
         ])
         
-       
+        NSLayoutConstraint.activate([
+            checkIcon.centerXAnchor.constraint(equalTo:
+                                                isDoneButton.centerXAnchor),
+            checkIcon.centerYAnchor.constraint(equalTo:
+                                                isDoneButton.centerYAnchor)
+        ])
+        
+        
         
     }
     
@@ -93,36 +111,74 @@ class CustomCell: UITableViewCell{
 //MARK: Method
 
 extension CustomCell { // 예시로 extension으로 정의했습니다.
+    
+    
     func configure(with todoItem: TodoData) { // configure 메서드 추가
+        bringData = todoItem
+        
         toDoTextfield.text = todoItem.contents // TodoList의 contents 값을 설정해줍니다.
-       
-        if let isDone = todoItem.isDone {
-            checkIcon.image = isDone ? UIImage(systemName: "checkmark.circle.fill") : UIImage(systemName: "checkmark.circle")
-        } else {
-            // Handle the case where isDone is nil (provide default styles)
-            toDoTextfield.textColor = UIColor.black // or any other color you prefer
-        }
-
+        
+//        if let isDone = todoItem.isDone {
+//            checkIcon.image = isDone ? UIImage(systemName: "checkmark.circle.fill")
+//            : UIImage(systemName: "checkmark.circle")
+//        } else {
+//            // Handle the case where isDone is nil (provide default styles)
+//            toDoTextfield.textColor = UIColor.black // or any other color you prefer
+//        }
+        
     }
     
     
     
     @objc func dateChange(_ sender: UIDatePicker){
         //값이 변하면 DatePicker에서 날짜를 받아와 textField에 삽입
-       dataArea.text = dateFormat(date: sender.date)
+        dataArea.text = dateFormat(date: sender.date)
     }
     
+    //Bug3 : Index 문제
+    @objc func isDoneChange(){
+        
+        //배열의 첫번째 요소
+        if let data = bringData{
+                     if (data.isDone == false){
+                data.isDone = true
+                TodoManager.shared.saveTodoItemsToUserDefaults()
+                checkIcon.image = UIImage(systemName: "checkmark.circle.fill")
+                 let attributedString = NSAttributedString(string:toDoTextfield.text ?? "",
+                                                          attributes: [
+                                                            NSAttributedString.Key.strikethroughStyle:NSUnderlineStyle.single.rawValue])
+                toDoTextfield.attributedText = attributedString
+            } else {                data.isDone = false
+                TodoManager.shared.saveTodoItemsToUserDefaults()
+                checkIcon.image = UIImage(systemName: "checkmark.circle")
+                    let attributedString = NSAttributedString(string:toDoTextfield.text ?? "")
+                toDoTextfield.attributedText = attributedString
+            }
+            
+            
+            
+            print("Check:,\(String(describing: data.isDone))")
+        } else {
+            print("nil")
+        }
+        
+        
+    }
+    
+    
     private func dateFormat(date:Date) -> String {
-       
+        
         let formtter = DateFormatter()
         formtter.dateFormat = "M.dd"
-  
+        
         let savedDate = UserDefaults.standard.string(forKey: "Date")
-       //Bug 2 : PickerView에서 date를 수정해도 오늘 날짜로 print 되는 문제
+        //Bug 2 : PickerView에서 date를 수정해도 오늘 날짜로 print 되는 문제
         //  @objc func dateChange + addAction. 로직을 합치면 될것같은데.. ?
-//        print("* 날짜 업데이트 완료: \(savedDate)")
+        //        print("* 날짜 업데이트 완료: \(savedDate)")
         
         return formtter.string(from: date)
         
     }
+    
+    
 }
