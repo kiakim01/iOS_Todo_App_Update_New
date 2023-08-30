@@ -7,43 +7,14 @@
 
 import UIKit
 
-class TableHeader: UITableViewHeaderFooterView{
-    static let identifier = "TableHeader"
-    
-  
-    
-  let headerLabel: UILabel = {
-        let label = UILabel()
-        label.text = "DO IT Something"
-        label.font = .systemFont(ofSize: 22, weight: .semibold)
-        label.textAlignment = .center
-        label.backgroundColor = UIColor.green
-        return label
-    }()
-    
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
-        contentView.addSubview(headerLabel)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-        
-    override func layoutSubviews() {
-        super.layoutSubviews()
-//        label.sizeToFit()
-        headerLabel.frame = CGRect(x: 0, y: -30, width: 300, height: 80)
-
-    }
-    
-}
 
 class ViewController: UIViewController, UITableViewDelegate {
     
+    let sectionData = ["One","Two","Three"]
+    
     
     var numberOfItem = TodoManager.shared.todoItems.count
-
+    static let identifier = "TableHeader"
     
     var shouldHideTodoView: Bool?{
         didSet{
@@ -83,12 +54,11 @@ class ViewController: UIViewController, UITableViewDelegate {
         button.addTarget(self, action: #selector(addCell), for: .touchUpInside)
         return button
     }()
-    
+
     
     let todoTableview: UITableView = {
         let tableView = UITableView()
         tableView.register(CustomCell.self,forCellReuseIdentifier: "CustomCell")
-        tableView.register(TableHeader.self, forHeaderFooterViewReuseIdentifier: "header")
         tableView.backgroundColor = UIColor.blue
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
@@ -107,7 +77,7 @@ class ViewController: UIViewController, UITableViewDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         configureUI()
-        
+        headerNfooter()
     }
     
     
@@ -126,10 +96,38 @@ extension ViewController{
         toDoView.addSubview(todoTableview)
         todoTableview.delegate = self
         todoTableview.dataSource = self
-        //emptyLabel 관련코드가 이
+      
         setLayout()
     }
     
+    func headerNfooter() {
+        let header = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 80))
+        let footer = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
+        
+//        header.backgroundColor = UIColor.orange
+//        footer.backgroundColor = UIColor.black
+        
+            let headerLabel = UILabel(frame:header.bounds)
+            headerLabel.text = "DO IT Something"
+            headerLabel.font = .systemFont(ofSize: 22, weight: .semibold)
+            headerLabel.textAlignment = .center
+            headerLabel.backgroundColor = UIColor.green
+        
+        header.addSubview(headerLabel)
+        
+  
+            let footerLabel = UILabel(frame: footer.bounds)
+            footerLabel.text = "I am a fotter"
+            footerLabel.font = .systemFont(ofSize: 22, weight: .semibold)
+            footerLabel.textAlignment = .center
+            footerLabel.backgroundColor = UIColor.green
+        footer.addSubview(footerLabel)
+        
+       
+        
+        todoTableview.tableHeaderView = header
+        todoTableview.tableFooterView = footer
+    }
     
     func setLayout(){
         NSLayoutConstraint.activate([
@@ -230,6 +228,21 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
 //
 //    }
     
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 2
+    }
+    
+//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+//        return "내가 헤더다"
+//    }
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 2
+    }
+    
+//    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+//        return "내가 푸터다"
+//    }
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "삭제") { [weak self] (_, _, completionHandler) in
             self?.deleteItem(at: indexPath)
@@ -277,18 +290,7 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
                 
                 UserDefaults.standard.set(Date, forKey: "Key_Date")
                 UserDefaults.standard.set(taskText, forKey: "Key_Contents")
-//                UserDefaults.standard.set(isDone, forKey: "Key_IsDone")
-                
-                
-                
-                // AlertTextField에 입력된 내용을 TodoList의 항목으로
-                //생성한 newTodo를 TodoList.data 배열에 추가합니다.
-                //지금까지는 여기 코드가 동작했던거군
-//                let newTodo = TodoList(contents: taskText, isDone: false)
-//                TodoList.data.append(newTodo)
-//                for (index,todo) in TodoList.data.enumerated() {
-//                    print("\(index). \(todo.contents),  \(todo.isDone)")
-//                }
+
 
                 let newTodoData = TodoData(date: currentDate, contents: taskText, isDone: false)
                 TodoManager.shared.addTodoItem(date: newTodoData.date, contents: newTodoData.contents)
@@ -314,16 +316,7 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
         
         
         
-        //        TextField에 직접 입력할때
-        //        let currentDate = Date()
-        //        let dateFormatter = DateFormatter()
-        //        dateFormatter.dateFormat = "M.dd"
-        //        let dateString = dateFormatter.string(from: currentDate)
-        //
-        //        let newTodo = TodoList(date: dateString, contents: "", isDone: false)
-        //        TodoList.data.append(newTodo)
-        //        numberOfItem += 1
-        //        todoTableview.reloadData()
+
     }
     
     
