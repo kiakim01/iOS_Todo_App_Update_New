@@ -103,30 +103,34 @@ extension ViewController{
     func headerNfooter() {
         let header = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 80))
         let footer = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
-        
-//        header.backgroundColor = UIColor.orange
-//        footer.backgroundColor = UIColor.black
-        
-            let headerLabel = UILabel(frame:header.bounds)
-            headerLabel.text = "DO IT Something"
-            headerLabel.font = .systemFont(ofSize: 22, weight: .semibold)
-            headerLabel.textAlignment = .center
-            headerLabel.backgroundColor = UIColor.green
+                
+        let headerLabel : UILabel = {
+            //view.frame을 조정하면, headerLabel이 움직였던 이유 .. ! 
+            let label = UILabel(frame: header.bounds)
+            label.text = "DO IT Something"
+            label.font = .systemFont(ofSize: 22, weight: .semibold)
+            label.textAlignment = .center
+            label.backgroundColor = UIColor.green
+            return label
+
+        }()
+  
+        let footerLabel : UILabel = {
+            let label = UILabel(frame: footer.bounds)
+            label.text = "I am a footer"
+            label.font = .systemFont(ofSize: 22, weight: .semibold)
+            label.textAlignment = .center
+            label.layer.borderColor = UIColor.green.cgColor
+            label.layer.borderWidth = 1
+            //            footerLabel.backgroundColor = UIColor.green
+            return label
+        }()
         
         header.addSubview(headerLabel)
-        
-  
-            let footerLabel = UILabel(frame: footer.bounds)
-            footerLabel.text = "I am a fotter"
-            footerLabel.font = .systemFont(ofSize: 22, weight: .semibold)
-            footerLabel.textAlignment = .center
-            footerLabel.backgroundColor = UIColor.green
         footer.addSubview(footerLabel)
         
-       
-        
-        todoTableview.tableHeaderView = header
-        todoTableview.tableFooterView = footer
+        todoTableview.tableHeaderView = headerLabel
+        todoTableview.tableFooterView = footerLabel
     }
     
     func setLayout(){
@@ -158,6 +162,8 @@ extension ViewController{
             todoTableview.rightAnchor.constraint(equalTo: toDoView.rightAnchor, constant: -20),
             todoTableview.bottomAnchor.constraint(equalTo: toDoView.bottomAnchor, constant: 50)
         ])
+        
+        
         
         NSLayoutConstraint.activate([
             self.doneView.leftAnchor.constraint(equalTo: self.toDoView.leftAnchor),
@@ -230,14 +236,14 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
     
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 2
+        return 1
     }
     
 //    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
 //        return "내가 헤더다"
 //    }
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 2
+        return 1
     }
     
 //    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
