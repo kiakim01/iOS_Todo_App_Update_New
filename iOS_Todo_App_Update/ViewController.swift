@@ -105,7 +105,7 @@ extension ViewController{
         let footer = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
                 
         let headerLabel : UILabel = {
-            //view.frame을 조정하면, headerLabel이 움직였던 이유 .. ! 
+            //view.frame을 조정하면, headerLabel이 움직였던 이유 .. !
             let label = UILabel(frame: header.bounds)
             label.text = "DO IT Something"
             label.font = .systemFont(ofSize: 22, weight: .semibold)
@@ -122,7 +122,6 @@ extension ViewController{
             label.textAlignment = .center
             label.layer.borderColor = UIColor.green.cgColor
             label.layer.borderWidth = 1
-            //            footerLabel.backgroundColor = UIColor.green
             return label
         }()
         
@@ -190,6 +189,10 @@ extension ViewController{
 //MARK: TableView
 extension ViewController: UITextViewDelegate, UITableViewDataSource{
     
+    //section의 개수
+//    func numberOfSections(in tableView: UITableView) -> Int {
+//        return sectionData.count
+//    }
     
     //View가 생성해야할 행의 개수
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -230,25 +233,32 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
         return cell
     }
     
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) -> UITableViewCell {
-//
-//    }
+    //특정 행을 선택했을 때
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
+        let selectedRow = indexPath.row
+        let selectedSection = indexPath.section
+        
+        let selectedData = sectionData[selectedSection]
+
+    }
     
-    
+    //Header & Footer
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 1
+        return 30
     }
-    
-//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-//        return "내가 헤더다"
-//    }
+  func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return sectionData[section]
+    }
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 1
+        return 30
     }
-    
 //    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-//        return "내가 푸터다"
+//        return "Footer In Section"
 //    }
+    
+   
+    
+    
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "삭제") { [weak self] (_, _, completionHandler) in
             self?.deleteItem(at: indexPath)
