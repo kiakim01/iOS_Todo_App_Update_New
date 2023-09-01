@@ -58,7 +58,8 @@ class ViewController: UIViewController, UITableViewDelegate {
     
     let todoTableview: UITableView = {
         let tableView = UITableView()
-        tableView.register(CustomCell.self,forCellReuseIdentifier: "CustomCell")
+        //cell을 tableView에 등록
+        tableView.`register`(CustomCell.self,forCellReuseIdentifier: "CustomCell")
         tableView.backgroundColor = UIColor.blue
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
@@ -71,6 +72,14 @@ class ViewController: UIViewController, UITableViewDelegate {
         view.layer.cornerRadius = 10
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
+    }()
+    
+    let doneTableview: UITableView = {
+       let tableview = UITableView()
+        tableview.`register`(CustomCell.self,forCellReuseIdentifier: "CustomCell")
+        tableview.translatesAutoresizingMaskIntoConstraints = false
+        
+       return tableview
     }()
     
     override func viewDidLoad() {
@@ -96,6 +105,9 @@ extension ViewController{
         toDoView.addSubview(todoTableview)
         todoTableview.delegate = self
         todoTableview.dataSource = self
+        doneView.addSubview(doneTableview)
+        doneTableview.delegate = self
+        doneTableview.dataSource = self
       
         setLayout()
     }
@@ -171,6 +183,12 @@ extension ViewController{
             self.doneView.topAnchor.constraint(equalTo: self.toDoView.topAnchor),
         ])
         
+        NSLayoutConstraint.activate([
+            doneTableview.topAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 25),
+            doneTableview.leftAnchor.constraint(equalTo: toDoView.leftAnchor, constant: 20),
+            doneTableview.rightAnchor.constraint(equalTo: toDoView.rightAnchor, constant: -20),
+            doneTableview.bottomAnchor.constraint(equalTo: toDoView.bottomAnchor, constant: 50)
+        ])
         
         
     }
@@ -188,7 +206,7 @@ extension ViewController{
 
 //MARK: TableView
 extension ViewController: UITextViewDelegate, UITableViewDataSource{
-    
+
     //section의 개수
 //    func numberOfSections(in tableView: UITableView) -> Int {
 //        return sectionData.count
@@ -196,6 +214,14 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
     
     //View가 생성해야할 행의 개수
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if tableView == todoTableview {
+            TodoManager.shared.todoItems.count
+        
+        }else {
+            let doneItemCount = TodoManager.shared.todoItems.filter { $0.isDone == true}.count
+            return doneItemCount
+        }
+        
         return numberOfItem
     }
     
@@ -204,6 +230,7 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //재사용이 가능한 셀을 가져오는 tableView 메서드
         let cell = tableView.dequeueReusableCell(withIdentifier: "CustomCell", for: indexPath) as! CustomCell
+        
          if TodoManager.shared.todoItems.count > 0 {
             let todoItem = TodoManager.shared.todoItems[indexPath.row]
             cell.configure(with: todoItem)
@@ -234,13 +261,13 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
     }
     
     //특정 행을 선택했을 때
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
-        let selectedRow = indexPath.row
-        let selectedSection = indexPath.section
-        
-        let selectedData = sectionData[selectedSection]
-
-    }
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
+//        let selectedRow = indexPath.row
+//        let selectedSection = indexPath.section
+//
+//        let selectedData = sectionData[selectedSection]
+//
+//    }
     
     //Header & Footer
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

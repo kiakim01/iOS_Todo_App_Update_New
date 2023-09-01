@@ -44,12 +44,10 @@ class CustomCell: UITableViewCell{
     }()
     
     let isDoneButton : UIButton = {
-        let button = UIButton()
-        //        button.backgroundColor = UIColor.red
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(isDoneChange), for: .touchUpInside)
-        return button
-    }()
+         let button = UIButton()
+         button.translatesAutoresizingMaskIntoConstraints = false
+         return button
+     }()
     
     let checkIcon : UIImageView = {
         let view = UIImageView()
@@ -66,7 +64,7 @@ class CustomCell: UITableViewCell{
         contentView.addSubview(toDoTextfield)
         contentView.addSubview(isDoneButton)
         isDoneButton.addSubview(checkIcon)
-        
+        isDoneButton.addTarget(self, action: #selector(isDoneChange), for: .touchUpInside)
         setupDate()
         setLayout()
         
@@ -118,13 +116,13 @@ extension CustomCell { // 예시로 extension으로 정의했습니다.
         
         toDoTextfield.text = todoItem.contents // TodoList의 contents 값을 설정해줍니다.
         
-//        if let isDone = todoItem.isDone {
-//            checkIcon.image = isDone ? UIImage(systemName: "checkmark.circle.fill")
-//            : UIImage(systemName: "checkmark.circle")
-//        } else {
-//            // Handle the case where isDone is nil (provide default styles)
-//            toDoTextfield.textColor = UIColor.black // or any other color you prefer
-//        }
+        if let isDone = todoItem.isDone {
+            checkIcon.image = isDone ? UIImage(systemName: "checkmark.circle.fill")
+          : UIImage(systemName: "checkmark.circle")
+        } else {
+            // Handle the case where isDone is nil (provide default styles)
+            toDoTextfield.textColor = UIColor.black // or any other color you prefer
+        }
         
     }
     
@@ -140,7 +138,10 @@ extension CustomCell { // 예시로 extension으로 정의했습니다.
         
         //배열의 첫번째 요소
         if let data = bringData{
+            
+           
                      if (data.isDone == false){
+                         
                 data.isDone = true
                 TodoManager.shared.saveTodoItemsToUserDefaults()
                 checkIcon.image = UIImage(systemName: "checkmark.circle.fill")
@@ -148,6 +149,8 @@ extension CustomCell { // 예시로 extension으로 정의했습니다.
                                                           attributes: [
                                                             NSAttributedString.Key.strikethroughStyle:NSUnderlineStyle.single.rawValue])
                 toDoTextfield.attributedText = attributedString
+                         
+                         
             } else {                data.isDone = false
                 TodoManager.shared.saveTodoItemsToUserDefaults()
                 checkIcon.image = UIImage(systemName: "checkmark.circle")

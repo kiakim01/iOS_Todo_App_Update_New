@@ -22,9 +22,15 @@ class TodoData: Codable {
 
 class TodoManager {
     static let shared = TodoManager() // Singleton instance
-    
-    var todoItems: [TodoData] = []
+  
+// Bug4 : 기본데이터 나오지 않는 문제
+    var todoItems: [TodoData] = [
+//        TodoData(contents: "테스트 문장",isDone: false),
+//        TodoData(contents: "테스트 문장",isDone: true)
+  ]
  
+
+    
     private init() {
            loadTodoItemsFromUserDefaults()
        }
