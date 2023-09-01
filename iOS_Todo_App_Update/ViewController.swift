@@ -116,7 +116,7 @@ extension ViewController{
         let header = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 80))
         let footer = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
                 
-        let headerLabel : UILabel = {
+        let dotoHeaderLabel : UILabel = {
             //view.frame을 조정하면, headerLabel이 움직였던 이유 .. !
             let label = UILabel(frame: header.bounds)
             label.text = "DO IT Something"
@@ -127,7 +127,7 @@ extension ViewController{
 
         }()
   
-        let footerLabel : UILabel = {
+        let todoFooterLabel : UILabel = {
             let label = UILabel(frame: footer.bounds)
             label.text = "I am a footer"
             label.font = .systemFont(ofSize: 22, weight: .semibold)
@@ -137,11 +137,23 @@ extension ViewController{
             return label
         }()
         
-        header.addSubview(headerLabel)
-        footer.addSubview(footerLabel)
+        let doneHeaderLabel : UILabel = {
+            //view.frame을 조정하면, headerLabel이 움직였던 이유 .. !
+            let label = UILabel(frame: header.bounds)
+            label.text = "Complete list"
+            label.font = .systemFont(ofSize: 22, weight: .semibold)
+            label.textAlignment = .center
+            label.backgroundColor = UIColor.green
+            return label
+
+        }()
         
-        todoTableview.tableHeaderView = headerLabel
-        todoTableview.tableFooterView = footerLabel
+        header.addSubview(dotoHeaderLabel)
+        footer.addSubview(todoFooterLabel)
+        
+        todoTableview.tableHeaderView = dotoHeaderLabel
+        todoTableview.tableFooterView = todoFooterLabel
+        doneTableview.tableHeaderView = doneHeaderLabel
     }
     
     func setLayout(){
@@ -266,7 +278,6 @@ extension ViewController: UITextViewDelegate, UITableViewDataSource{
 //        let selectedSection = indexPath.section
 //
 //        let selectedData = sectionData[selectedSection]
-//
 //    }
     
     //Header & Footer
